@@ -11,6 +11,9 @@ import br.edu.ifpi.DAO.ContaPoupancaDAO;
 import br.edu.ifpi.Model.ContaPoupanca;
 import br.edu.ifpi.Model.ContaCorrente;
 import java.util.Scanner;
+import br.edu.ifpi.Factory.ContaFactory;
+import br.edu.ifpi.Factory.ContaCorrenteFactory;
+import br.edu.ifpi.Factory.ContaPoupancaFactory;
 
 
 
@@ -319,41 +322,46 @@ public static void MenuGerentePessoaFisica(PessoaFisica pessoa){
                     scanner.nextLine(); // Consome a quebra de linha
                     if (tipoConta == 1) {
 
-                        ContaCorrente contaCorrente = new ContaCorrente();
-                        // Atribuindo a pessoa como titular da conta
-                        contaCorrente.setTitular(pessoa);
-                       
+                        ContaFactory factory = new ContaCorrenteFactory();
+                        br.edu.ifpi.Model.ContaBancaria conta = factory.criarConta(pessoa);
                         System.out.print("Digite o número da conta: ");
-                        contaCorrente.setNumero(scanner.nextLine());
-                        
+                        conta.setNumero(scanner.nextLine());
                         System.out.print("Digite o saldo inicial: ");
-                        contaCorrente.setSaldo(scanner.nextDouble());
+                        conta.setSaldo(scanner.nextDouble());
                         scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
                         System.out.print("Digite o limite de crédito: ");
-                        contaCorrente.setLimite(scanner.nextDouble());
-                        scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
-                        // Salvando o objeto contaCorrente no banco de dados
-                        daoContaCorrente.salvar(contaCorrente);
+                        if (conta instanceof br.edu.ifpi.Model.ContaCorrente) {
+                            ((br.edu.ifpi.Model.ContaCorrente) conta).setLimite(scanner.nextDouble());
+                            scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
+                            // Salvando o objeto contaCorrente no banco de dados
+                            daoContaCorrente.salvar((br.edu.ifpi.Model.ContaCorrente) conta);
+                        } else {
+                            // fallback: consumir input e informar erro
+                            scanner.nextLine();
+                            System.out.println("Erro ao criar conta corrente.");
+                        }
+                    
+                        System.out.println("Conta salva com sucesso!"); 
+
                     } else if (tipoConta == 2) {
-                        ContaPoupanca contaPoupanca = new ContaPoupanca();
-
-                        // Atribuindo a pessoa como titular da conta
-                        contaPoupanca.setTitular(pessoa);
-
+                        ContaFactory factory = new ContaPoupancaFactory();
+                        br.edu.ifpi.Model.ContaBancaria conta = factory.criarConta(pessoa);
                         System.out.print("Digite o número da conta: ");
-                        contaPoupanca.setNumero(scanner.nextLine());
-                        System.out.print("Digite o saldo inicial: ");           
-                        contaPoupanca.setSaldo(scanner.nextDouble());
+                        conta.setNumero(scanner.nextLine());
+                        System.out.print("Digite o saldo inicial: ");
+                        conta.setSaldo(scanner.nextDouble());
                         scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
                         System.out.print("Digite a taxa de rendimento: ");
-                        contaPoupanca.setRendimento(scanner.nextDouble());
-                        scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
+                        if (conta instanceof br.edu.ifpi.Model.ContaPoupanca) {
+                            ((br.edu.ifpi.Model.ContaPoupanca) conta).setRendimento(scanner.nextDouble());
+                            scanner.nextLine();
+                        }
                         // Salvando o objeto contaPoupanca no banco de dados
-                        daoContaPoupanca.salvar(contaPoupanca);
-                    } else {
-                        System.out.println("\nTipo de conta inválido. Por favor, tente novamente.\n");
-                  }
-                        System.out.println("Conta salva com sucesso!"); 
+                        daoContaPoupanca.salvar((br.edu.ifpi.Model.ContaPoupanca) conta);
+                     } else {
+                         System.out.println("\nTipo de conta inválido. Por favor, tente novamente.\n");
+                   }
+                         System.out.println("Conta salva com sucesso!"); 
 
                     break;
                 case 0:
@@ -399,21 +407,18 @@ public static void MenuGerentePessoaJuridica(PessoaJuridica pessoa){
                 
                     scanner.nextLine(); // Consome a quebra de linha
                     
-                        ContaCorrente contaCorrente = new ContaCorrente();
-                        // Atribuindo a pessoa como titular da conta
-                        contaCorrente.setTitular(pessoa);
-                       
+                        ContaFactory factory = new ContaCorrenteFactory();
+                        br.edu.ifpi.Model.ContaBancaria conta = factory.criarConta(pessoa);
                         System.out.print("Digite o número da conta: ");
-                        contaCorrente.setNumero(scanner.nextLine());
-                        
+                        conta.setNumero(scanner.nextLine());
                         System.out.print("Digite o saldo inicial: ");
-                        contaCorrente.setSaldo(scanner.nextDouble());
+                        conta.setSaldo(scanner.nextDouble());
                         scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
                         System.out.print("Digite o limite de crédito: ");
-                        contaCorrente.setLimite(scanner.nextDouble());
+                        conta.setLimite(scanner.nextDouble());
                         scanner.nextLine(); // Consome a quebra de linha após o nextDouble()
                         // Salvando o objeto contaCorrente no banco de dados
-                        daoContaCorrente.salvar(contaCorrente);
+                        daoContaCorrente.salvar(conta);
                     
                         System.out.println("Conta salva com sucesso!"); 
 
